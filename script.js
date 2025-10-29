@@ -27,7 +27,7 @@ function randomChoice(array) {
 
 
 // 显示温馨提示
-function showWarmTips(count = 100) {
+function showWarmTips(count = 50) {
     // 清除旧的提示窗口
     warmTipsContainer.innerHTML = '';
     
@@ -138,7 +138,7 @@ function initEventListeners() {
         startBtn.textContent = '进行中...';
         
         // 显示温馨提示效果
-        showWarmTips(100);
+        showWarmTips(50);
         
         // 5秒后恢复按钮状态
         setTimeout(() => {
