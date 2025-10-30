@@ -92,8 +92,14 @@ function createWarmTip(viewportWidth, viewportHeight) {
     tipElement.style.left = `${x}px`;
     tipElement.style.top = `${y}px`;
     
-    // 只添加一个点击事件监听器，避免重复
-    tipElement.addEventListener('click', () => {
+    // 处理点击/触摸事件的函数
+    function handleClose(e) {
+        // 优化：对于鼠标点击，直接关闭；对于触摸事件，检查是否是拖拽
+        if (e.type === 'touchend' && tipElement._isDragging) {
+            // 触摸时如果是拖拽状态则不关闭
+            return;
+        }
+        
         tipElement.style.opacity = '0';
         tipElement.style.transform = 'translateY(-10px) scale(0.95)';
         setTimeout(() => {
@@ -101,7 +107,12 @@ function createWarmTip(viewportWidth, viewportHeight) {
                 tipElement.remove();
             }
         }, 1000);
-    });
+    }
+    
+    // 添加点击事件监听器
+    tipElement.addEventListener('click', handleClose);
+    // 添加触摸结束事件监听器，支持手机端
+    tipElement.addEventListener('touchend', handleClose, { passive: true });
     
     warmTipsContainer.appendChild(tipElement);
     
@@ -442,6 +453,8 @@ function enableDragging(element) {
     // 处理拖拽开始
     function handleDragStart(e) {
         isDragging = true;
+        // 设置元素的拖拽状态标志
+        element._isDragging = true;
         const coords = getTouchCoords(e);
         offsetX = coords.x - element.getBoundingClientRect().left;
         offsetY = coords.y - element.getBoundingClientRect().top;
@@ -484,6 +497,10 @@ function enableDragging(element) {
     function handleDragEnd() {
         if (isDragging) {
             isDragging = false;
+            // 使用setTimeout延迟清除拖拽标志，确保触摸结束事件能够正确识别拖拽
+            setTimeout(() => {
+                element._isDragging = false;
+            }, 50);
             element.style.cursor = 'move';
             // 恢复浮动动画
             setTimeout(() => {
