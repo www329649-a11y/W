@@ -28,7 +28,7 @@ function randomChoice(array) {
 
 
 // 显示温馨提示
-function showWarmTips(count = 15) { // 减少数量以提高性能
+function showWarmTips(count = 25) { // 减少数量以提高性能
     // 清除旧的提示窗口
     warmTipsContainer.innerHTML = '';
     
@@ -38,7 +38,7 @@ function showWarmTips(count = 15) { // 减少数量以提高性能
     
     // 根据设备类型调整数量
     const isMobile = viewportWidth < 768;
-    const actualCount = isMobile ? 10 : count;
+    const actualCount = isMobile ? 25 : count;
     const intervalTime = isMobile ? 300 : 500;
     
     // 创建多个提示窗口 - 分批创建以避免卡顿
@@ -125,7 +125,7 @@ function createParticles(forceReset = false) {
     
     // 根据设备类型调整粒子数量
     const isMobile = containerWidth < 768;
-    const particleCount = isMobile ? 30 : 60; // 减少粒子数量
+    const particleCount = isMobile ? 40 : 60; // 减少粒子数量
     
     // 创建文档片段以减少DOM操作次数
     const fragment = document.createDocumentFragment();
@@ -216,7 +216,7 @@ function createCherryBlossoms() {
     
     // 根据设备类型调整数量
     const isMobile = viewportWidth < 768;
-    const initialCount = isMobile ? 15 : 30; // 减少初始数量
+    const initialCount = isMobile ? 20 : 30; // 减少初始数量
     const intervalTime = isMobile ? 2000 : 1000; // 增加间隔时间
     
     // 创建初始樱花花瓣 - 分批创建
