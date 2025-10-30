@@ -28,7 +28,7 @@ function randomChoice(array) {
 
 
 // 显示温馨提示
-function showWarmTips(count = 40) { // 减少数量以提高性能
+function showWarmTips(count = 25) { // 减少数量以提高性能
     // 清除旧的提示窗口
     warmTipsContainer.innerHTML = '';
     
@@ -38,7 +38,7 @@ function showWarmTips(count = 40) { // 减少数量以提高性能
     
     // 根据设备类型调整数量
     const isMobile = viewportWidth < 768;
-    const actualCount = isMobile ? 40 : count;
+    const actualCount = isMobile ? 25 : count;
     const intervalTime = isMobile ? 300 : 500;
     
     // 创建多个提示窗口 - 分批创建以避免卡顿
@@ -105,6 +105,9 @@ function createWarmTip(viewportWidth, viewportHeight) {
     
     warmTipsContainer.appendChild(tipElement);
     
+    // 启用拖拽功能
+    enableDragging(tipElement);
+    
     // 返回创建的元素
     return tipElement;
 }
@@ -125,7 +128,7 @@ function createParticles(forceReset = false) {
     
     // 根据设备类型调整粒子数量
     const isMobile = containerWidth < 768;
-    const particleCount = isMobile ? 25 : 60; // 减少粒子数量
+    const particleCount = isMobile ? 40 : 60; // 减少粒子数量
     
     // 创建文档片段以减少DOM操作次数
     const fragment = document.createDocumentFragment();
@@ -417,26 +420,49 @@ window.addEventListener('beforeunload', () => {
 
 // =========================== 增强互动性功能 ===========================
 
-// 1. 拖拽功能 - 为温馨提示窗口添加拖拽能力
+// 1. 拖拽功能 - 为温馨提示窗口添加拖拽能力（支持鼠标和触摸）
 function enableDragging(element) {
     let isDragging = false;
     let offsetX, offsetY;
     
-    element.addEventListener('mousedown', (e) => {
+    // 获取触摸点坐标的辅助函数
+    function getTouchCoords(e) {
+        if (e.touches) {
+            return {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY
+            };
+        }
+        return {
+            x: e.clientX,
+            y: e.clientY
+        };
+    }
+    
+    // 处理拖拽开始
+    function handleDragStart(e) {
         isDragging = true;
-        offsetX = e.clientX - element.getBoundingClientRect().left;
-        offsetY = e.clientY - element.getBoundingClientRect().top;
+        const coords = getTouchCoords(e);
+        offsetX = coords.x - element.getBoundingClientRect().left;
+        offsetY = coords.y - element.getBoundingClientRect().top;
         
         // 提高当前拖拽元素的层级
         element.style.zIndex = 10002;
         element.style.cursor = 'grabbing';
-    });
+        
+        // 阻止触摸时的默认行为（如页面滚动）
+        if (e.type.includes('touch')) {
+            e.preventDefault();
+        }
+    }
     
-    document.addEventListener('mousemove', (e) => {
+    // 处理拖拽移动
+    function handleDragMove(e) {
         if (!isDragging) return;
         
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
+        const coords = getTouchCoords(e);
+        const x = coords.x - offsetX;
+        const y = coords.y - offsetY;
         
         // 确保元素不会拖出视口
         const maxX = window.innerWidth - element.offsetWidth;
@@ -447,9 +473,15 @@ function enableDragging(element) {
         
         // 停止浮动动画
         element.style.animationPlayState = 'paused';
-    });
+        
+        // 阻止触摸时的默认行为
+        if (e.type.includes('touch')) {
+            e.preventDefault();
+        }
+    }
     
-    document.addEventListener('mouseup', () => {
+    // 处理拖拽结束
+    function handleDragEnd() {
         if (isDragging) {
             isDragging = false;
             element.style.cursor = 'move';
@@ -458,7 +490,18 @@ function enableDragging(element) {
                 element.style.animationPlayState = 'running';
             }, 1000);
         }
-    });
+    }
+    
+    // 添加鼠标事件监听器
+    element.addEventListener('mousedown', handleDragStart);
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+    
+    // 添加触摸事件监听器（支持手机端）
+    element.addEventListener('touchstart', handleDragStart, { passive: false });
+    document.addEventListener('touchmove', handleDragMove, { passive: false });
+    document.addEventListener('touchend', handleDragEnd);
+    document.addEventListener('touchcancel', handleDragEnd);
 }
 
 // 2. 鼠标点击特效 - 爱心粒子爆炸

@@ -21,6 +21,14 @@ body {
     /* 硬件加速 */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    /* 减少重绘 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 禁用文本选择以提高性能 */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 /* 背景效果 */
@@ -64,17 +72,20 @@ body {
     color: #333;
     min-width: 250px;
     text-align: center;
-    animation: tipAppear 0.3s ease-out, tipFloat 6s ease-in-out infinite;
+    animation: tipAppear 0.3s ease-out, tipFloat 4s ease-in-out infinite;
     pointer-events: auto;
     cursor: move;
     opacity: 0.9;
     backdrop-filter: blur(5px);
-    /* 添加平滑过渡效果 */
-    transition: opacity 1s ease, transform 0.5s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    /* 添加平滑过渡效果 - 只保留必要的过渡 */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
     /* 硬件加速 */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: transform, opacity;
+    will-change: transform;
+    /* 减少绘制复杂度 */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* 温馨提示悬浮效果 */
@@ -187,6 +198,50 @@ body {
         width: 24px;
         height: 24px;
         /* 确保图标在按钮内完全显示 */
+    }
+    
+    /* 针对移动设备的深度性能优化 */
+    /* 进一步减少动画复杂度 */
+    .warm-tip {
+        animation-duration: 2.5s;
+        animation-timing-function: ease;
+    }
+    
+    /* 简化动画 */
+    @keyframes tipFloat {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-3px) rotate(0deg);
+        }
+    }
+    
+    /* 为移动设备优化动画 */
+    .particle,
+    .cherry-blossom {
+        animation-duration: 10s;
+    }
+    
+    /* 禁用一些不必要的动画 */
+    .music-control:hover {
+        transform: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* 针对小屏幕设备的极限优化 */
+@media (max-width: 375px) {
+    /* 进一步减少动画效果 */
+    .warm-tip {
+        animation: tipAppear 0.3s ease-out !important;
+        transform: translateY(0) !important;
+    }
+    
+    /* 大幅简化动画 */
+    .particle,
+    .cherry-blossom {
+        animation-duration: 15s;
     }
 }
 
@@ -317,7 +372,10 @@ body {
     /* 硬件加速 */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: transform, opacity;
+    will-change: transform;
+    /* 减少绘制复杂度 */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* 樱花花瓣下落动画 */
@@ -333,7 +391,7 @@ body {
         opacity: 0.8;
     }
     100% {
-        transform: translateY(calc(var(--vh, 1vh) * 100)) translateX(var(--translate-x)) rotate(720deg);
+        transform: translateY(calc(var(--vh, 1vh) * 100)) rotate(360deg);
         opacity: 0;
     }
 }
@@ -360,7 +418,11 @@ body {
     /* 硬件加速 */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: transform, opacity;
+    /* 只声明必要的变化属性 */
+    will-change: transform;
+    /* 减少绘制复杂度 */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 @keyframes particle-float {
