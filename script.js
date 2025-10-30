@@ -28,7 +28,7 @@ function randomChoice(array) {
 
 
 // 显示温馨提示
-function showWarmTips(count = 25) { // 减少数量以提高性能
+function showWarmTips(count = 40) { // 减少数量以提高性能
     // 清除旧的提示窗口
     warmTipsContainer.innerHTML = '';
     
@@ -38,7 +38,7 @@ function showWarmTips(count = 25) { // 减少数量以提高性能
     
     // 根据设备类型调整数量
     const isMobile = viewportWidth < 768;
-    const actualCount = isMobile ? 20 : count;
+    const actualCount = isMobile ? 40 : count;
     const intervalTime = isMobile ? 300 : 500;
     
     // 创建多个提示窗口 - 分批创建以避免卡顿
