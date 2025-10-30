@@ -189,7 +189,7 @@ function initEventListeners() {
     startBtn.addEventListener('click', () => {
         // 禁用按钮防止重复点击
         startBtn.disabled = true;
-        startBtn.textContent = '想你...';
+        startBtn.textContent = '我也在想你';
         
         // 显示温馨提示效果
         showWarmTips(30);
