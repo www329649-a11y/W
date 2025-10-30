@@ -75,14 +75,14 @@ function createWarmTip(viewportWidth, viewportHeight) {
         }, 1000);
     });
     
-    // 自动消失（5-10秒后）
-    setTimeout(() => {
+    // 只保留点击关闭功能，移除自动消失
+    tipElement.addEventListener('click', () => {
         tipElement.style.opacity = '0';
         tipElement.style.transform = 'translateY(-10px) scale(0.95)';
         setTimeout(() => {
             tipElement.remove();
         }, 1000);
-    }, 5000 + Math.random() * 5000);
+    });
     
     warmTipsContainer.appendChild(tipElement);
     
@@ -273,8 +273,76 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// 初始化背景音乐控制
+function initBGM() {
+    const bgm = document.getElementById('bgm');
+    const musicToggle = document.getElementById('music-toggle');
+    const musicIcon = document.getElementById('music-icon');
+    
+    if (!bgm || !musicToggle || !musicIcon) return;
+    
+    // 保存原始的音乐图标路径
+    const playIconPath = musicIcon.querySelector('path').getAttribute('d');
+    const pauseIconPath = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
+    
+    // 切换音乐播放/暂停
+    function toggleMusic() {
+        if (bgm.paused) {
+            // 尝试播放音乐
+            bgm.play().catch(error => {
+                console.log('无法自动播放音乐，需要用户交互:', error);
+                // 自动播放失败时不做任何操作，等待用户再次点击
+            });
+        } else {
+            bgm.pause();
+        }
+    }
+    
+    // 更新播放状态和图标
+    function updatePlayState() {
+        if (bgm.paused) {
+            musicToggle.classList.add('paused');
+            musicIcon.querySelector('path').setAttribute('d', playIconPath);
+        } else {
+            musicToggle.classList.remove('paused');
+            musicIcon.querySelector('path').setAttribute('d', pauseIconPath);
+        }
+    }
+    
+    // 监听播放和暂停事件
+    bgm.addEventListener('play', updatePlayState);
+    bgm.addEventListener('pause', updatePlayState);
+    
+    // 点击切换按钮
+    musicToggle.addEventListener('click', toggleMusic);
+    
+    // 添加全局点击事件监听器，当用户与页面交互时尝试播放音乐
+    function tryPlayOnInteraction() {
+        // 只在音乐未播放且未尝试过的情况下执行
+        if (bgm.paused) {
+            bgm.play().catch(() => {
+                // 播放失败不做处理，继续等待用户明确点击播放按钮
+            });
+        }
+        
+        // 移除监听器，避免重复尝试
+        document.removeEventListener('click', tryPlayOnInteraction);
+        document.removeEventListener('touchstart', tryPlayOnInteraction);
+    }
+    
+    // 添加全局交互事件监听器
+    document.addEventListener('click', tryPlayOnInteraction);
+    document.addEventListener('touchstart', tryPlayOnInteraction, { passive: true });
+    
+    console.log('背景音乐初始化完成');
+}
+
 // 页面加载完成后初始化
-window.addEventListener('DOMContentLoaded', init);
+window.addEventListener('DOMContentLoaded', () => {
+    init();
+    // 页面初始化后初始化背景音乐
+    setTimeout(initBGM, 500);
+});
 
 // 页面卸载时清理资源
 window.addEventListener('beforeunload', () => {

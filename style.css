@@ -125,6 +125,57 @@ body {
     }
 }
 
+/* 音乐控制按钮样式 */
+.music-control {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(255, 182, 193, 0.8);
+    color: #ff6b9d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(255, 107, 157, 0.3);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.music-control:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+    background: rgba(255, 255, 255, 1);
+}
+
+.music-control:active {
+    transform: scale(0.95);
+}
+
+/* 音乐暂停状态的图标样式 */
+.music-control.paused #music-icon {
+    /* 暂停图标的样式修改会通过JS实现 */
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .music-control {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    #music-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
 /* 开始按钮样式 */
 .start-button {
     background: linear-gradient(45deg, #ff6b6b, #ee5a6f);

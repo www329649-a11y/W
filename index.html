@@ -9,6 +9,20 @@
 <body>
     <!-- 背景效果容器 -->
     <div class="background-effects"></div>
+    <!-- 背景音乐播放器 -->
+    <audio id="bgm" loop>            
+        <!-- 周杰伦/杨瑞代 - 月光
+              请将音乐文件下载后命名为 "月光.mp3" 并放在项目根目录
+              或修改下方src路径指向您的音乐文件 -->
+         <source src="./TINY7 - 零距离的思念_爱给网_aigei_com.mp3" type="audio/mpeg">
+        </audio>
+    
+        <!-- 音乐控制按钮 -->
+        <button id="music-toggle" class="music-control">
+            <svg id="music-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+        </button>
     
     <div class="controls">
         <button id="startBtn" class="start-button">想你了</button>
