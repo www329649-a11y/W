@@ -28,7 +28,7 @@ function randomChoice(array) {
 
 
 // 显示温馨提示
-function showWarmTips(count = 30) {
+function showWarmTips(count = 15) { // 减少数量以提高性能
     // 清除旧的提示窗口
     warmTipsContainer.innerHTML = '';
     
@@ -36,16 +36,35 @@ function showWarmTips(count = 30) {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // 创建多个提示窗口
-    for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-            createWarmTip(viewportWidth, viewportHeight);
-        }, i * 500); // 间隔5ms创建一个窗口，模拟Python版本的快速弹出效果
+    // 根据设备类型调整数量
+    const isMobile = viewportWidth < 768;
+    const actualCount = isMobile ? 10 : count;
+    const intervalTime = isMobile ? 300 : 500;
+    
+    // 创建多个提示窗口 - 分批创建以避免卡顿
+    let createdCount = 0;
+    const batchSize = isMobile ? 3 : 5;
+    
+    function createBatch() {
+        if (createdCount >= actualCount) return;
+        
+        const end = Math.min(createdCount + batchSize, actualCount);
+        for (let i = createdCount; i < end; i++) {
+            setTimeout(() => {
+                createWarmTip(viewportWidth, viewportHeight);
+            }, (i - createdCount) * 100);
+        }
+        
+        createdCount = end;
+        setTimeout(createBatch, intervalTime);
     }
+    
+    createBatch();
 }
 
 // 创建单个温馨提示窗口
 function createWarmTip(viewportWidth, viewportHeight) {
+    // 优化：使用文档片段减少DOM操作
     const tipElement = document.createElement('div');
     tipElement.className = 'warm-tip';
     
@@ -57,30 +76,30 @@ function createWarmTip(viewportWidth, viewportHeight) {
     const bgColor = randomChoice(bgColors);
     tipElement.style.backgroundColor = bgColor;
     
+    // 根据视口宽度调整提示窗口大小
+    const isMobile = viewportWidth < 768;
+    const windowWidth = isMobile ? 180 : 250;
+    const windowHeight = isMobile ? 70 : 90;
+    
+    // 调整字体大小
+    tipElement.style.fontSize = isMobile ? '14px' : '16px';
+    tipElement.style.padding = isMobile ? '15px' : '20px';
+    
     // 随机位置，但确保窗口完全在视口内
-    const windowWidth = 250;
-    const windowHeight = 90;
     const x = Math.random() * (viewportWidth - windowWidth);
     const y = Math.random() * (viewportHeight - windowHeight);
     
     tipElement.style.left = `${x}px`;
     tipElement.style.top = `${y}px`;
     
-    // 添加点击关闭事件
+    // 只添加一个点击事件监听器，避免重复
     tipElement.addEventListener('click', () => {
         tipElement.style.opacity = '0';
         tipElement.style.transform = 'translateY(-10px) scale(0.95)';
         setTimeout(() => {
-            tipElement.remove();
-        }, 1000);
-    });
-    
-    // 只保留点击关闭功能，移除自动消失
-    tipElement.addEventListener('click', () => {
-        tipElement.style.opacity = '0';
-        tipElement.style.transform = 'translateY(-10px) scale(0.95)';
-        setTimeout(() => {
-            tipElement.remove();
+            if (document.body.contains(tipElement)) {
+                tipElement.remove();
+            }
         }, 1000);
     });
     
@@ -92,7 +111,7 @@ function createWarmTip(viewportWidth, viewportHeight) {
 
 
 
-// 粒子效果函数
+// 粒子效果函数 - 性能优化版
 function createParticles(forceReset = false) {
     // 清空容器
     particlesContainer.innerHTML = '';
@@ -104,31 +123,51 @@ function createParticles(forceReset = false) {
     const containerWidth = window.innerWidth;
     const containerHeight = window.innerHeight;
     
-    // 创建100个粒子
-    for (let i = 0; i < 100; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
+    // 根据设备类型调整粒子数量
+    const isMobile = containerWidth < 768;
+    const particleCount = isMobile ? 30 : 60; // 减少粒子数量
+    
+    // 创建文档片段以减少DOM操作次数
+    const fragment = document.createDocumentFragment();
+    
+    // 分批创建粒子
+    function createParticlesBatch(start, end) {
+        for (let i = start; i < end; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // 随机大小
+            const size = Math.random() * 3 + 1; // 减小粒子大小
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            // 随机位置
+            particle.style.left = `${Math.random() * containerWidth}px`;
+            particle.style.top = `${Math.random() * containerHeight}px`;
+            
+            // 随机颜色（使用温暖的颜色）
+            const colors = ['#ff6b6b', '#ffa502', '#ffd700', '#90ee90', '#87cefa', '#dda0dd'];
+            particle.style.background = randomChoice(colors);
+            
+            // 随机动画延迟和持续时间
+            const delay = Math.random() * 5;
+            const duration = Math.random() * 15 + 10; // 缩短动画时间
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+            
+            fragment.appendChild(particle);
+        }
         
-        // 随机大小
-        const size = Math.random() * 5 + 1;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        
-        // 随机位置
-        particle.style.left = `${Math.random() * containerWidth}px`;
-        particle.style.top = `${Math.random() * containerHeight}px`;
-        
-        // 随机颜色（使用温暖的颜色）
-        const colors = ['#ff6b6b', '#ffa502', '#ffd700', '#90ee90', '#87cefa', '#dda0dd'];
-        particle.style.background = randomChoice(colors);
-        
-        // 随机动画延迟和持续时间
-        const delay = Math.random() * 5;
-        const duration = Math.random() * 20 + 10;
-        particle.style.animationDelay = `${delay}s`;
-        particle.style.animationDuration = `${duration}s`;
-        
-        particlesContainer.appendChild(particle);
+        particlesContainer.appendChild(fragment);
+    }
+    
+    // 分批创建以避免卡顿
+    const batchSize = 10;
+    for (let i = 0; i < particleCount; i += batchSize) {
+        const end = Math.min(i + batchSize, particleCount);
+        setTimeout(() => {
+            createParticlesBatch(i, end);
+        }, (i / batchSize) * 100);
     }
     
     // 确保容器可见
@@ -141,7 +180,7 @@ function initEventListeners() {
     startBtn.addEventListener('click', () => {
         // 禁用按钮防止重复点击
         startBtn.disabled = true;
-        startBtn.textContent = '进行中...';
+        startBtn.textContent = '想你...';
         
         // 显示温馨提示效果
         showWarmTips(30);
@@ -164,7 +203,7 @@ function initEventListeners() {
 
 
 
-// 创建樱花效果
+// 创建樱花效果 - 性能优化版
 function createCherryBlossoms() {
     if (!cherryBlossomContainer) return;
     
@@ -175,19 +214,39 @@ function createCherryBlossoms() {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // 创建初始的50个樱花花瓣
-    for (let i = 0; i < 50; i++) {
-        createCherryBlossom(viewportWidth, viewportHeight);
+    // 根据设备类型调整数量
+    const isMobile = viewportWidth < 768;
+    const initialCount = isMobile ? 15 : 30; // 减少初始数量
+    const intervalTime = isMobile ? 2000 : 1000; // 增加间隔时间
+    
+    // 创建初始樱花花瓣 - 分批创建
+    let createdCount = 0;
+    const batchSize = 5;
+    
+    function createInitialBatch() {
+        if (createdCount >= initialCount) return;
+        
+        const end = Math.min(createdCount + batchSize, initialCount);
+        for (let i = createdCount; i < end; i++) {
+            createCherryBlossom(viewportWidth, viewportHeight);
+        }
+        
+        createdCount = end;
+        if (createdCount < initialCount) {
+            setTimeout(createInitialBatch, 300);
+        }
     }
+    
+    createInitialBatch();
     
     // 每隔一段时间创建新的樱花花瓣
     const interval = setInterval(() => {
-        // 每次创建2-5个新的花瓣
-        const count = Math.floor(Math.random() * 4) + 2;
+        // 根据设备调整创建数量
+        const count = Math.floor(Math.random() * (isMobile ? 2 : 3)) + 1;
         for (let i = 0; i < count; i++) {
             createCherryBlossom(viewportWidth, viewportHeight);
         }
-    }, 1000);
+    }, intervalTime);
     
     // 存储intervalID以便后续清理
     cherryBlossomContainer._intervalID = interval;

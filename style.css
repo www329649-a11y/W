@@ -18,6 +18,9 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
+    /* 硬件加速 */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 /* 背景效果 */
@@ -46,6 +49,7 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 9999;
+    overflow: hidden;
 }
 
 /* 温馨提示窗口样式 */
@@ -67,6 +71,10 @@ body {
     backdrop-filter: blur(5px);
     /* 添加平滑过渡效果 */
     transition: opacity 1s ease, transform 0.5s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    /* 硬件加速 */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
 }
 
 /* 温馨提示悬浮效果 */
@@ -144,6 +152,9 @@ body {
     z-index: 1000;
     transition: all 0.3s ease;
     outline: none;
+    /* 确保按钮完全显示 */
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 .music-control:hover {
@@ -164,15 +175,33 @@ body {
 /* 响应式调整 */
 @media (max-width: 768px) {
     .music-control {
-        bottom: 20px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
+        bottom: 15px;
+        right: 15px;
+        width: 55px;
+        height: 55px;
+        /* 增加按钮尺寸，确保在小屏幕上可见 */
+        padding: 8px;
     }
     
     #music-icon {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
+        /* 确保图标在按钮内完全显示 */
+    }
+}
+
+/* 针对更小屏幕的优化 */
+@media (max-width: 375px) {
+    .music-control {
+        width: 60px;
+        height: 60px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    #music-icon {
+        width: 26px;
+        height: 26px;
     }
 }
 
@@ -285,6 +314,10 @@ body {
     pointer-events: none;
     animation: cherryBlossomFloat linear infinite;
     box-shadow: 0 0 10px rgba(255, 204, 213, 0.5);
+    /* 硬件加速 */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
 }
 
 /* 樱花花瓣下落动画 */
@@ -324,6 +357,10 @@ body {
     opacity: 0.7;
     pointer-events: none;
     animation: particle-float linear infinite;
+    /* 硬件加速 */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
 }
 
 @keyframes particle-float {
